@@ -4,7 +4,7 @@ const buffer = require('buffer');
 const fs = require("fs");
 const Websocket = require("ws");
 // varibles
-const wss = new WebSocketServer.Server({ port: 8080 });
+const wss = new Websocket.Server({ port: 8080 });
 const Seed = "";
 var seedvault = "";
 const AcceptedHash = "69"; // value temperary for testing perposes 
@@ -66,7 +66,7 @@ wss.on("connection", ws => {
         console.log("Some Error occurred");
     }
 });
-conso
+
 function addlogin(newhash){
     //addlogin after the client verifies the data and the data is sent to us then we can add the login hash to the server
     //the data will be stored in the user profile(home on linux) folder on the server
