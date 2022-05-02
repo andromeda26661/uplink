@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "secure-json-parse": "^2.4.0",
     "ws": "^8.5.0"
   }
 }

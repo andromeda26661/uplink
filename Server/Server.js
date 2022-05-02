@@ -1,15 +1,25 @@
 // Importing Required Modules
 const crypto = require('crypto');
 const buffer = require('buffer');
+const sjson = require('secure-json-parse')
 const fs = require("fs");
 const Websocket = require("ws");
-// varibles
+// init varibles
 const wss = new Websocket.Server({ port: 8080 });
-const Seed = "";
-var seedvault = "";
+const Seed = [];
+var seedvault = [];
 const AcceptedHash = "69"; // value temperary for testing perposes 
-var verifiedhwid = "";
-var bannedhwid = "";
+var verifiedhwid = [];
+var bannedhwid = [];
+// fs locations
+var seedvaultloc = '%userprofile%/uplink/conf/seedvault.txt';
+var hwidloc = '%userprofile%/uplink/conf/hwidvault.txt';
+var bannedloc = '%userprofile%/uplink/conf/bannedvault.txt';
+// init global vars
+verifiedhwid = fs.readFileSync(hwidloc).toString().split(",");
+bannedhwid = fs.readFileSync(bannedloc).toString().split(",");
+seedvault = fs.readFileSync(seedvaultloc).toString().split(",");
+
 
 const { privateKey, publicKey } = crypto.generateKeyPairSync('rsa', {
     modulusLength: 2048,
@@ -25,10 +35,10 @@ wss.on("connection", ws => {
         var databuf = new buffer(data);
         //check data to see if it is from intended client(game md5 hash followed by hwid), reject everything else
         console.log(`Client has sent us: ${data}`); // only use this for debug remove later
-        var hwid =  databuf.toString().substring(AcceptedHash.length(), databuf.toString())
+        var hwid = databuf.toString().substring(AcceptedHash.length(), databuf.toString())
         //check for banned users
         bannedhwid.forEach(element => {
-            if(hwid == bannedhwid){
+            if(hwid == element){
                 ws.close(403, "You are banned");
             }
         })
@@ -66,13 +76,16 @@ wss.on("connection", ws => {
         console.log("Some Error occurred");
     }
 });
+function Checkseed(){
+
+}
 
 function addlogin(newhash){
     //addlogin after the client verifies the data and the data is sent to us then we can add the login hash to the server
     //the data will be stored in the user profile(home on linux) folder on the server
     var seedvaultold = seedvault;
     seedvault = seedvaultold + newhash;
-    fs.appendFileSync("%userprofile%/uplink/conf/seedvault.txt", seedvault);
+    fs.appendFileSync(seedvaultloc, seedvault + ",");
 }
 function login(Hash){
     // login function checks the hash from the client against the seedvault
